@@ -179,19 +179,21 @@ function colorizeLottie(json, colorByPath) {
 `}
         </pre>
       </div>
-      <div style={{ position: 'fixed' }}>
-        <Lottie
-          options={{
-            loop: true,
-            autoplay: true,
-            animationData: lottieJson,
-            rendererSettings: {
-              preserveAspectRatio: 'xMidYMid slice',
-            },
-          }}
-          height={400}
-          width={400}
-        />
+      <div>
+        <div style={{ position: 'fixed' }}>
+          <Lottie
+            options={{
+              loop: true,
+              autoplay: true,
+              animationData: lottieJson,
+              rendererSettings: {
+                preserveAspectRatio: 'xMidYMid slice',
+              },
+            }}
+            height={400}
+            width={400}
+          />
+        </div>
       </div>
     </div>
   );
