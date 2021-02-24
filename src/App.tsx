@@ -151,10 +151,10 @@ function App() {
           </div>
         ))}
 
-<pre>
-{`
+        <pre>
+          {`
 colorizeLottie(LOTTIE_SOURCE, {
-${colors.map(color => `  "${color.path}": "${color.color}",`).join('\n')}
+${colors.map((color) => `  "${color.path}": "${color.color}",`).join('\n')}
 });
 
 import produce from 'immer';
@@ -177,9 +177,9 @@ function colorizeLottie(json, colorByPath) {
   });
 }
 `}
-</pre>
+        </pre>
       </div>
-      <div>
+      <div style={{ position: 'fixed' }}>
         <Lottie
           options={{
             loop: true,
