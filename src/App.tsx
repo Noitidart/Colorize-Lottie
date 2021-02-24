@@ -2,11 +2,10 @@ import './App.css';
 
 import produce, { setAutoFreeze } from 'immer';
 import { isNumber, isPlainObject, set } from 'lodash';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Lottie from 'react-lottie';
 import tinycolor from 'tinycolor2';
 
-import logo from './logo.svg';
 import CircleCheckJson from './circle-check.json';
 
 // get only paths that have parent of c.k
