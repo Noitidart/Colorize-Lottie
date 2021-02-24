@@ -157,16 +157,27 @@ function App() {
 
         <pre>
           {`
-colorizeLottie(LOTTIE_SOURCE, {
-${colors
-  .map(
-    (color) =>
-      `  // ${color.nmPath}
-  "${color.path}": "${color.color}",`
-  )
-  .join('\n')}
-});
+function Example() {
+  const colorizedSource = useMemo(() => colorizeLottie(
+    LOTTIE_SOURCE,
+    {
+    ${colors
+      .map(
+        (color) =>
+          `  // ${color.nmPath}
+      "${color.path}": "${color.color}",`
+      )
+      .join('\n    ')}
+    }
+  ), []);
 
+  <LottieView source={colorizedSource} />
+}
+`}
+        </pre>
+
+        <pre className="PreBoiler">
+          {`
 import produce from 'immer';
 import { set } from 'lodash';
 import tinycolor from 'tinycolor2';
