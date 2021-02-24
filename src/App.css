@@ -45,11 +45,27 @@
 
 .Color {
   display: flex;
+  padding-bottom: 16px;
 }
+
+.Color__PreviewContainer {
+  display: flex;
+}
+
 .Color__Preview {
   display: inline-block;
   border: 1px solid black;
+  outline: 1px solid white;
   margin-right: 8px;
   width: 36px;
-  height: 36px;
+}
+
+.Color__Path {
+  font-weight: '500';
+  display: block;
+}
+
+.Color__NMPath {
+  color: #8e8e93;
+  display: block;
 }

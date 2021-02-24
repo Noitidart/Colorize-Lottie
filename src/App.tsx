@@ -23,15 +23,16 @@ function isColorArray(value: any[]) {
   return Array.isArray(value) && value.length === 4 && value.every(isNumber);
 }
 
-type WalkCollection = { path: string; color: string }[];
+type WalkCollection = { nmPath: string; path: string; color: string }[];
 function walk(obj: any) {
   const collection: WalkCollection = [];
-  walkHelper(obj, [], collection);
+  walkHelper(obj, [], [], collection);
   return collection;
 }
 function walkHelper(
   obj: any,
   parentPath: string[],
+  nmPath: string[],
   collection: WalkCollection
 ) {
   if (Array.isArray(obj) || isPlainObject(obj)) {
@@ -49,13 +50,15 @@ function walkHelper(
           .setAlpha(val[3]);
         collection.push({
           // color index
+          nmPath: nmPath.join('.'),
           path: curPath.join('.'),
           color: color.toHexString(),
         });
       }
     }
+    const nextNmPath = val.hasOwnProperty('nm') ? [...nmPath, val.nm] : nmPath;
     // console.log('path:', [...parentPath, key].join('.'));
-    walkHelper(val, [...parentPath, key], collection);
+    walkHelper(val, [...parentPath, key], nextNmPath, collection);
   }
 }
 
@@ -106,17 +109,19 @@ function App() {
           />
         </div>
 
+        <br />
+
         {colors.map((color) => (
-          <div key={color.path} className="Color">
-            <div>
+          <label key={color.path} className="Color">
+            <div className="Color__PreviewContainer">
               <span
                 className="Color__Preview"
                 style={{ backgroundColor: color.color }}
               />
             </div>
             <div>
-              {color.path}
-              <br />
+              <span className="Color__Path">{color.path}</span>
+              <small className="Color__NMPath">{color.nmPath}</small>
               <input
                 type="text"
                 defaultValue={color.color}
@@ -124,7 +129,7 @@ function App() {
                   setColors((colors) => {
                     const nextColors = colors.map((aColor) =>
                       aColor.path === color.path
-                        ? { color: e.target.value, path: color.path }
+                        ? { ...color, color: e.target.value }
                         : aColor
                     );
 
@@ -148,13 +153,19 @@ function App() {
                 }}
               />
             </div>
-          </div>
+          </label>
         ))}
 
         <pre>
           {`
 colorizeLottie(LOTTIE_SOURCE, {
-${colors.map((color) => `  "${color.path}": "${color.color}",`).join('\n')}
+${colors
+  .map(
+    (color) =>
+      `  // ${color.nmPath}
+  "${color.path}": "${color.color}",`
+  )
+  .join('\n')}
 });
 
 import produce from 'immer';
