@@ -171,7 +171,7 @@ function Example() {
     }
   ), []);
 
-  <LottieView source={colorizedSource} />
+  return <LottieView source={colorizedSource} />;
 }
 `}
         </pre>
