@@ -2,11 +2,13 @@ import './App.css';
 
 import produce, { setAutoFreeze } from 'immer';
 import { isNumber, isPlainObject, set } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Lottie from 'react-lottie';
 import tinycolor from 'tinycolor2';
 
 import CircleCheckJson from './circle-check.json';
+
+setAutoFreeze(false);
 
 // get only paths that have parent of c.k
 function isCKPath(path: string[]) {
@@ -56,15 +58,12 @@ function walkHelper(
       }
     }
     const nextNmPath = val.hasOwnProperty('nm') ? [...nmPath, val.nm] : nmPath;
-    // console.log('path:', [...parentPath, key].join('.'));
     walkHelper(val, [...parentPath, key], nextNmPath, collection);
   }
 }
 
 function colorizeLottie(json: {}, colorByPath: Record<string, string>) {
   // otherwise in dev mode it adds weird things to the object and it wont load in lottie
-  setAutoFreeze(false);
-
   return produce(json, (draft) => {
     Object.entries(colorByPath).forEach(([path, color]) => {
       const rgbPercentages = tinycolor(color).toPercentageRgb();
@@ -83,7 +82,15 @@ function colorizeLottie(json: {}, colorByPath: Record<string, string>) {
 const initalColors = walk(CircleCheckJson);
 const initialLotiJsonStr = JSON.stringify(CircleCheckJson);
 function App() {
+  const [lottieJsonStr, setLottieJsonStr] = useState(initialLotiJsonStr);
+
+  // lottie seems to mutate the source, so we make a copy
   const [lottieJson, setLottieJson] = useState<{}>(CircleCheckJson);
+  useEffect(() => {
+    setLottieJson(JSON.parse(lottieJsonStr));
+    setColors(walk(JSON.parse(lottieJsonStr)));
+  }, [lottieJsonStr]);
+
   const [colors, setColors] = useState(initalColors);
 
   return (
@@ -97,13 +104,16 @@ function App() {
             cols={30}
             defaultValue={initialLotiJsonStr}
             onChange={(e) => {
+              const nextLottieJsonStr = e.target.value;
+              let parsed;
               try {
-                const parsed = JSON.parse(e.target.value);
-                setLottieJson(parsed);
-                setColors(walk(parsed));
+                parsed = JSON.parse(nextLottieJsonStr);
               } catch (error) {
                 alert('Invalid JSON');
+                return;
               }
+
+              setLottieJsonStr(nextLottieJsonStr);
             }}
           />
         </div>
@@ -128,30 +138,27 @@ function App() {
                   const nextColor = tinycolor(e.target.value);
                   if (nextColor.isValid() === false) return;
 
-                  setColors((colors) => {
-                    const nextColors = colors.map((aColor) =>
-                      aColor.path === color.path
-                        ? { ...color, color: e.target.value }
-                        : aColor
-                    );
+                  const nextColors = colors.map((aColor) =>
+                    aColor.path === color.path
+                      ? { ...color, color: e.target.value }
+                      : aColor
+                  );
 
-                    const nextLottieJson = colorizeLottie(
-                      lottieJson,
-                      nextColors.reduce(
-                        (acc, color) => ({
-                          ...acc,
-                          [color.path]: tinycolor(color.color).toHexString(),
-                        }),
-                        {}
-                      )
-                    );
+                  const nextColorByPath = nextColors.reduce(
+                    (acc, color) => ({
+                      ...acc,
+                      [color.path]: tinycolor(color.color).toHexString(),
+                    }),
+                    {}
+                  );
+                  const nextLottieJson = colorizeLottie(
+                    JSON.parse(lottieJsonStr),
+                    nextColorByPath
+                  );
 
-                    setTimeout(() => {
-                      setLottieJson(nextLottieJson);
-                    }, 0);
+                  setLottieJson(nextLottieJson);
 
-                    return nextColors;
-                  });
+                  setColors(nextColors);
                 }}
               />
             </div>
