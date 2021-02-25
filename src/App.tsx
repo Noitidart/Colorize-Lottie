@@ -124,7 +124,10 @@ function App() {
               <input
                 type="text"
                 defaultValue={color.color}
-                onBlur={(e) => {
+                onChange={(e) => {
+                  const nextColor = tinycolor(e.target.value);
+                  if (nextColor.isValid() === false) return;
+
                   setColors((colors) => {
                     const nextColors = colors.map((aColor) =>
                       aColor.path === color.path
