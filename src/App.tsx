@@ -62,10 +62,12 @@ function walkHelper(
   }
 }
 
+// values of colorByPath can be falsy to no-op
 function colorizeLottie(json: {}, colorByPath: Record<string, string>) {
-  // otherwise in dev mode it adds weird things to the object and it wont load in lottie
   return produce(json, (draft) => {
     Object.entries(colorByPath).forEach(([path, color]) => {
+      // incase undefined/null/falsy is passed to color
+      if (!color) return;
       const rgbPercentages = tinycolor(color).toPercentageRgb();
       const rFraction = parseInt(rgbPercentages.r, 10) / 100;
       const gFraction = parseInt(rgbPercentages.g, 10) / 100;
@@ -192,9 +194,12 @@ import produce from 'immer';
 import { set } from 'lodash';
 import tinycolor from 'tinycolor2';
 
+// values of colorByPath can be falsy to no-op
 function colorizeLottie(json, colorByPath) {
   return produce(json, (draft) => {
     Object.entries(colorByPath).forEach(([path, color]) => {
+      // incase undefined/null/falsy is passed to color
+      if (!color) return;
       const rgbPercentages = tinycolor(color).toPercentageRgb();
       const rFraction = parseInt(rgbPercentages.r, 10) / 100;
       const gFraction = parseInt(rgbPercentages.g, 10) / 100;
