@@ -1,14 +1,11 @@
 import './App.css';
 
-import produce, { setAutoFreeze } from 'immer';
 import { isNumber, isPlainObject, set } from 'lodash';
 import { useEffect, useState } from 'react';
 import Lottie from 'react-lottie';
 import tinycolor from 'tinycolor2';
 
 import CircleCheckJson from './circle-check.json';
-
-setAutoFreeze(false);
 
 // get only paths that have parent of c.k
 function isCKPath(path: string[]) {
@@ -64,23 +61,24 @@ function walkHelper(
 
 // values of colorByPath can be falsy to no-op
 function colorizeLottie(json: {}, colorByPath: Record<string, string>) {
-  return produce(json, (draft) => {
-    Object.entries(colorByPath).forEach(([path, color]) => {
-      // incase undefined/null/falsy is passed to color
-      if (!color) return;
-      const rgbPercentages = tinycolor(color).toPercentageRgb();
-      const rFraction = parseInt(rgbPercentages.r, 10) / 100;
-      const gFraction = parseInt(rgbPercentages.g, 10) / 100;
-      const bFraction = parseInt(rgbPercentages.b, 10) / 100;
+  const nextJson = JSON.parse(JSON.stringify(json));
 
-      const pathParts = path.split('.');
-      set(draft, [...pathParts, 0], rFraction);
-      set(draft, [...pathParts, 1], gFraction);
-      set(draft, [...pathParts, 2], bFraction);
-    });
+  Object.entries(colorByPath).forEach(([path, color]) => {
+    // incase undefined/null/falsy is passed to color
+    if (!color) return;
+    const rgbPercentages = tinycolor(color).toPercentageRgb();
+    const rFraction = parseInt(rgbPercentages.r, 10) / 100;
+    const gFraction = parseInt(rgbPercentages.g, 10) / 100;
+    const bFraction = parseInt(rgbPercentages.b, 10) / 100;
+
+    const pathParts = path.split('.');
+    set(nextJson, [...pathParts, 0], rFraction);
+    set(nextJson, [...pathParts, 1], gFraction);
+    set(nextJson, [...pathParts, 2], bFraction);
   });
-}
 
+  return nextJson;
+}
 const initalColors = walk(CircleCheckJson);
 const initialLotiJsonStr = JSON.stringify(CircleCheckJson);
 function App() {
@@ -196,21 +194,23 @@ import tinycolor from 'tinycolor2';
 
 // values of colorByPath can be falsy to no-op
 function colorizeLottie(json, colorByPath) {
-  return produce(json, (draft) => {
-    Object.entries(colorByPath).forEach(([path, color]) => {
-      // incase undefined/null/falsy is passed to color
-      if (!color) return;
-      const rgbPercentages = tinycolor(color).toPercentageRgb();
-      const rFraction = parseInt(rgbPercentages.r, 10) / 100;
-      const gFraction = parseInt(rgbPercentages.g, 10) / 100;
-      const bFraction = parseInt(rgbPercentages.b, 10) / 100;
+  const nextJson = JSON.parse(JSON.stringify(json));
 
-      const pathParts = path.split('.');
-      set(draft, [...pathParts, 0], rFraction);
-      set(draft, [...pathParts, 1], gFraction);
-      set(draft, [...pathParts, 2], bFraction);
-    });
+  Object.entries(colorByPath).forEach(([path, color]) => {
+    // incase undefined/null/falsy is passed to color
+    if (!color) return;
+    const rgbPercentages = tinycolor(color).toPercentageRgb();
+    const rFraction = parseInt(rgbPercentages.r, 10) / 100;
+    const gFraction = parseInt(rgbPercentages.g, 10) / 100;
+    const bFraction = parseInt(rgbPercentages.b, 10) / 100;
+
+    const pathParts = path.split('.');
+    set(nextJson, [...pathParts, 0], rFraction);
+    set(nextJson, [...pathParts, 1], gFraction);
+    set(nextJson, [...pathParts, 2], bFraction);
   });
+
+  return nextJson;
 }
 `}
         </pre>
