@@ -105,9 +105,8 @@ function App() {
             defaultValue={initialLotiJsonStr}
             onChange={(e) => {
               const nextLottieJsonStr = e.target.value;
-              let parsed;
               try {
-                parsed = JSON.parse(nextLottieJsonStr);
+                JSON.parse(nextLottieJsonStr);
               } catch (error) {
                 alert('Invalid JSON');
                 return;
