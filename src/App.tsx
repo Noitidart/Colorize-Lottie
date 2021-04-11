@@ -220,10 +220,7 @@ function colorizeLottie(json, colorByPath) {
             options={{
               loop: true,
               autoplay: true,
-              animationData: lottieJson,
-              rendererSettings: {
-                preserveAspectRatio: 'xMidYMid slice',
-              },
+              animationData: lottieJson
             }}
             height={400}
             width={400}
